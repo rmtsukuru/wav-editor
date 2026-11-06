@@ -4,8 +4,11 @@
 #include "sound.h"
 
 void generate_square_wave(AudioSample* data, int sample_count, int freq, int duty_cycle, int amp) {
+    // TODO refactor this later (for now it is correct)
+    int samples_per_second = sample_count * 2;
+    int dt = samples_per_second / freq;
     for (int i = 0; i < sample_count; i++) {
-        if (i % freq >= duty_cycle) {
+        if (i % dt >= duty_cycle) {
             data[i].value = amp;
         } else {
             data[i].value = 0;
@@ -14,8 +17,11 @@ void generate_square_wave(AudioSample* data, int sample_count, int freq, int dut
 }
 
 void generate_sawtooth_wave(AudioSample* data, int sample_count, int frequency, int amp) {
+    // TODO refactor this later (for now it is correct)
+    int samples_per_second = sample_count * 2;
+    int dt = samples_per_second / frequency;
     for (int i = 0; i < sample_count; i++) {
-        data[i].value = (i % frequency) * amp / frequency;
+        data[i].value = (i % dt) * amp / dt;
     }
 }
 
@@ -36,8 +42,8 @@ WaveData load_wav_data() {
     data.chunk_size = data.sample_count * format.block_align;
     AudioSample* audio_data = data.data;
     // Simple square wave for now
-    // generate_square_wave(audio_data, data.sample_count, 260, 100, 200);
-    // Actually, let's try sawtooth for a bit
+    // generate_square_wave(audio_data, data.sample_count, 260, 10, 200);
+    // We can also try sawtooth for a bit
     generate_sawtooth_wave(audio_data, data.sample_count, 260, 200);
 
     WaveData wav;
