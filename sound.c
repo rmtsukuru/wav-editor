@@ -3,6 +3,22 @@
 
 #include "sound.h"
 
+void generate_square_wave(AudioSample* data, int sample_count, int freq, int duty_cycle, int amp) {
+    for (int i = 0; i < sample_count; i++) {
+        if (i % freq >= duty_cycle) {
+            data[i].value = amp;
+        } else {
+            data[i].value = 0;
+        }
+    }
+}
+
+void generate_sawtooth_wave(AudioSample* data, int sample_count, int frequency, int amp) {
+    for (int i = 0; i < sample_count; i++) {
+        data[i].value = (i % frequency) * amp / frequency;
+    }
+}
+
 WaveData load_wav_data() {
     FormatChunk format;
     strcpy(format.chunk_id, "fmt ");
@@ -20,15 +36,9 @@ WaveData load_wav_data() {
     data.chunk_size = data.sample_count * format.block_align;
     AudioSample* audio_data = data.data;
     // Simple square wave for now
-    int frequency = 260;
-    int duty_cycle = 100;
-    for (int i = 0; i < data.sample_count; i++) {
-        if (i % frequency >= duty_cycle) {
-            audio_data[i].value = 200;
-        } else {
-            audio_data[i].value = 0;
-        }
-    }
+    // generate_square_wave(audio_data, data.sample_count, 260, 100, 200);
+    // Actually, let's try sawtooth for a bit
+    generate_sawtooth_wave(audio_data, data.sample_count, 260, 200);
 
     WaveData wav;
     strcpy(wav.descriptor, "RIFF");
