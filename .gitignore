@@ -1,0 +1,4 @@
+*.exe
+audio/*.mid
+audio/*.wav
+output/*
