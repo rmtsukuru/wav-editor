@@ -30,7 +30,7 @@ int write_wav_file(FILE* file, WaveData* wav) {
     fwrite(buffer, 2, 1, file);
     write_bytes(buffer, format->sample_rate, 4);
     fwrite(buffer, 4, 1, file);
-    printf("Sample Rate: %d\n", format->sample_rate);
+    // printf("Sample Rate: %d\n", format->sample_rate);
     write_bytes(buffer, format->byte_rate, 4);
     fwrite(buffer, 4, 1, file);
     write_bytes(buffer, format->block_align, 2);
@@ -43,7 +43,7 @@ int write_wav_file(FILE* file, WaveData* wav) {
     fwrite(data->chunk_id, 4, 1, file);
     write_bytes(buffer, data->chunk_size, 4);
     fwrite(buffer, 4, 1, file);
-    printf("Data Chunk Size: %d\n", data->chunk_size);
+    // printf("Data Chunk Size: %d\n", data->chunk_size);
     byte_count += 8;
     AudioSample* audio_data = data->data;
     for (int i = 0; i < data->sample_count; i++) {
