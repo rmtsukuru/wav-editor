@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "sound.h"
 
 void generate_square_wave(AudioSample* data, int sample_count, int freq, int duty_cycle, int amp) {
     // TODO refactor this later (for now it is correct)
+    // It should use sampling rate as a param or something in future
     int samples_per_second = sample_count * 2;
     int dt = samples_per_second / freq;
     for (int i = 0; i < sample_count; i++) {
@@ -22,6 +24,20 @@ void generate_sawtooth_wave(AudioSample* data, int sample_count, int frequency, 
     int dt = samples_per_second / frequency;
     for (int i = 0; i < sample_count; i++) {
         data[i].value = (i % dt) * amp / dt;
+    }
+}
+
+void generate_sine_wave(AudioSample* data, int sample_count, int freq, int amp, int sample_rate) {
+    int dt = sample_rate / freq;
+    for (int i = 0; i < sample_count; i++) {
+        data[i].value = sin(i * 2 * M_PI / dt) * amp;
+    }
+}
+
+void generate_tangent_wave(AudioSample* data, int sample_count, int frequency, int sample_rate) {
+    int dt = sample_rate / frequency;
+    for (int i = 0; i < sample_count; i++) {
+        data[i].value = tan((i * M_PI / 2) / dt);
     }
 }
 
@@ -44,7 +60,15 @@ WaveData load_wav_data() {
     // Simple square wave for now
     // generate_square_wave(audio_data, data.sample_count, 260, 10, 200);
     // We can also try sawtooth for a bit
-    generate_sawtooth_wave(audio_data, data.sample_count, 260, 200);
+    // generate_sawtooth_wave(audio_data, data.sample_count, 260, 200);
+    // And now with sine waves!
+    // generate_sine_wave(audio_data, data.sample_count, 260, 200);
+
+    // And now for something really special
+    int offset = data.sample_count / 3;
+    generate_sine_wave(audio_data, offset, 260, 200, format.sample_rate);
+    generate_sine_wave(audio_data + offset, offset * 2, 330, 200, format.sample_rate);
+    generate_sine_wave(audio_data + offset * 2, offset * 3, 390, 200, format.sample_rate);
 
     WaveData wav;
     strcpy(wav.descriptor, "RIFF");
