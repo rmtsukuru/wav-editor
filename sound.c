@@ -34,6 +34,19 @@ void generate_sine_wave(AudioSample* data, int sample_count, int freq, int amp, 
     }
 }
 
+// Assume freqs always has length of 3.
+void generate_triple_sine_wave(AudioSample* data, int len, int* freqs, int amp, int sample_rate) {
+    int dt1 = sample_rate / freqs[0];
+    int dt2 = sample_rate / freqs[1];
+    int dt3 = sample_rate / freqs[2];
+    for (int i = 0; i < len; i++) {
+        int val1 = sin(i * 2 * M_PI / dt1);
+        int val2 = sin(i * 2 * M_PI / dt2);
+        int val3 = sin(i * 2 * M_PI / dt3);
+        data[i].value = (val1 + val2 + val3) * amp;
+    }
+}
+
 void generate_tangent_wave(AudioSample* data, int sample_count, int frequency, int sample_rate) {
     int dt = sample_rate / frequency;
     for (int i = 0; i < sample_count; i++) {
@@ -54,7 +67,7 @@ WaveData load_wav_data() {
 
     DataChunk data;
     strcpy(data.chunk_id, "data");
-    data.sample_count = format.sample_rate / 2;
+    data.sample_count = format.sample_rate;
     data.chunk_size = data.sample_count * format.block_align;
     AudioSample* audio_data = data.data;
     // Simple square wave for now
@@ -65,10 +78,12 @@ WaveData load_wav_data() {
     // generate_sine_wave(audio_data, data.sample_count, 260, 200);
 
     // And now for something really special
-    int offset = data.sample_count / 3;
+    int offset = data.sample_count / 6;
+    int freqs[] = {260, 330, 390};
     generate_sine_wave(audio_data, offset, 260, 200, format.sample_rate);
     generate_sine_wave(audio_data + offset, offset * 2, 330, 200, format.sample_rate);
     generate_sine_wave(audio_data + offset * 2, offset * 3, 390, 200, format.sample_rate);
+    generate_triple_sine_wave(audio_data + offset * 3, offset * 5, freqs, 200, format.sample_rate);
 
     WaveData wav;
     strcpy(wav.descriptor, "RIFF");
